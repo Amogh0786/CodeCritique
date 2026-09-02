@@ -56,7 +56,7 @@ css = """
 }
 """
 
-with gr.Blocks(theme=custom_theme, title="CodeCritique Pro", css=css) as demo:
+with gr.Blocks(title="CodeCritique Pro") as demo:
     gr.HTML(
         """
         <div style="text-align: center; max-width: 800px; margin: 0 auto; padding: 30px 0 10px 0;">
@@ -70,7 +70,7 @@ with gr.Blocks(theme=custom_theme, title="CodeCritique Pro", css=css) as demo:
         with gr.Column(scale=1):
             gr.Markdown("### 📝 Input Git Diff")
             diff_input = gr.Code(
-                language="diff", 
+                language="python", 
                 lines=15, 
                 value=example_diff_1, 
                 label="", 
@@ -109,4 +109,4 @@ with gr.Blocks(theme=custom_theme, title="CodeCritique Pro", css=css) as demo:
 
 if __name__ == "__main__":
     print("Starting Pro Gradio demo on http://localhost:7861...")
-    demo.launch(server_name="0.0.0.0", server_port=7861)
+    demo.launch(server_name="0.0.0.0", server_port=7861, theme=custom_theme, css=css)
