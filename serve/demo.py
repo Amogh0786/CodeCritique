@@ -1,11 +1,11 @@
 import gradio as gr
 import requests
 
-API_URL = "http://localhost:8085/generate_review"
+API_URL = "http://localhost:8090/generate_review"
 
 def get_review(diff_text):
     if not diff_text.strip():
-        return "Please enter a valid git diff."
+        return "⚠️ Please enter a valid git diff."
         
     try:
         response = requests.post(
@@ -16,14 +16,13 @@ def get_review(diff_text):
         if response.status_code == 200:
             return response.json()["review"]
         else:
-            return f"Error: {response.status_code} - {response.text}"
+            return f"❌ Error: {response.status_code} - {response.text}"
     except requests.exceptions.ConnectionError:
-        return "Error: Could not connect to the API. Is the FastAPI server running on localhost:8000?"
+        return "❌ Error: Could not connect to the API. Is the FastAPI server running on localhost:8090?"
     except Exception as e:
-        return f"An error occurred: {str(e)}"
+        return f"❌ An error occurred: {str(e)}"
 
-# Example diff for the user to try
-example_diff = """@@ -42,7 +42,7 @@ def process_data(data):
+example_diff_1 = """@@ -42,7 +42,7 @@ def process_data(data):
      result = []
      for item in data:
 -        if item != None:
@@ -31,14 +30,83 @@ example_diff = """@@ -42,7 +42,7 @@ def process_data(data):
              result.append(item.process())
      return result"""
 
-demo = gr.Interface(
-    fn=get_review,
-    inputs=gr.Textbox(lines=15, placeholder="Paste your git diff here...", value=example_diff, label="Git Diff"),
-    outputs=gr.Markdown(label="Automated Code Review"),
-    title="🤖 Automated Code Review Generator",
-    description="This demo uses our fine-tuned Llama 3.1 8B model to automatically generate constructive code review comments based on a git diff."
+example_diff_2 = """@@ -10,4 +10,5 @@
+ def calculate_total(price, tax):
+-    return price + tax
++    total = price + tax
++    return total"""
+
+custom_theme = gr.themes.Soft(
+    primary_hue="indigo",
+    secondary_hue="slate",
+    neutral_hue="slate",
+    font=[gr.themes.GoogleFont("Inter"), "ui-sans-serif", "system-ui", "sans-serif"],
+).set(
+    button_primary_background_fill="*primary_600",
+    button_primary_background_fill_hover="*primary_700",
 )
 
+css = """
+.prose {
+    padding: 20px;
+    background-color: var(--background-fill-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color-primary);
+    min-height: 400px;
+}
+"""
+
+with gr.Blocks(theme=custom_theme, title="CodeCritique Pro", css=css) as demo:
+    gr.HTML(
+        """
+        <div style="text-align: center; max-width: 800px; margin: 0 auto; padding: 30px 0 10px 0;">
+            <h1 style="font-weight: 800; font-size: 2.5rem; margin-bottom: 0.5rem;">🧠 CodeCritique AI</h1>
+            <p style="font-size: 1.1rem; color: #64748b;">Automated, intelligent code reviews powered by a fine-tuned Llama 3.1 8B model.</p>
+        </div>
+        """
+    )
+    
+    with gr.Row():
+        with gr.Column(scale=1):
+            gr.Markdown("### 📝 Input Git Diff")
+            diff_input = gr.Code(
+                language="diff", 
+                lines=15, 
+                value=example_diff_1, 
+                label="", 
+                elem_id="diff-input"
+            )
+            with gr.Row():
+                clear_btn = gr.Button("🗑️ Clear", variant="secondary")
+                submit_btn = gr.Button("✨ Generate Code Review", variant="primary")
+                
+        with gr.Column(scale=1):
+            gr.Markdown("### 🤖 Automated Review")
+            review_output = gr.Markdown(
+                label="", 
+                value="*Your code review will appear here...*",
+                elem_classes=["prose"]
+            )
+            
+    gr.Examples(
+        examples=[[example_diff_1], [example_diff_2]],
+        inputs=diff_input,
+        label="Try these examples"
+    )
+
+    submit_btn.click(
+        fn=get_review,
+        inputs=diff_input,
+        outputs=review_output,
+        api_name="generate"
+    )
+    
+    clear_btn.click(
+        fn=lambda: ("", "*Your code review will appear here...*"),
+        inputs=None,
+        outputs=[diff_input, review_output]
+    )
+
 if __name__ == "__main__":
-    print("Starting Gradio demo on http://localhost:7860...")
-    demo.launch(server_name="0.0.0.0", server_port=7860)
+    print("Starting Pro Gradio demo on http://localhost:7861...")
+    demo.launch(server_name="0.0.0.0", server_port=7861)
