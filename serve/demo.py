@@ -108,5 +108,5 @@ with gr.Blocks(title="CodeCritique Pro") as demo:
     )
 
 if __name__ == "__main__":
-    print("Starting Pro Gradio demo on http://localhost:7861...")
-    demo.launch(server_name="0.0.0.0", server_port=7861, theme=custom_theme, css=css)
+    print("Starting Pro Gradio demo on http://localhost:7862...")
+    demo.launch(server_name="0.0.0.0", server_port=7862, theme=custom_theme, css=css)
