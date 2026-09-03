@@ -1,10 +1,24 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { simulateReview } from './mockApi'
-import type { ReviewResponse } from './mockApi'
 import * as Diff2Html from 'diff2html'
 import 'diff2html/bundles/css/diff2html.min.css'
 import './index.css'
+
+export type Severity = 'critical' | 'warning' | 'info';
+
+export interface ReviewComment {
+  id: string;
+  line: number;
+  file: string;
+  severity: Severity;
+  title: string;
+  message: string;
+}
+
+export interface ReviewResponse {
+  summary: string;
+  comments: ReviewComment[];
+}
 
 type ViewState = 'input' | 'loading' | 'results' | 'error'
 
@@ -28,7 +42,6 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState('')
   const [isDark, setIsDark] = useState(true)
 
-  // Toggle theme class on body
   useEffect(() => {
     if (isDark) {
       document.body.classList.add('dark')
@@ -47,11 +60,23 @@ export default function App() {
     }
     setView('loading')
     try {
-      const data = await simulateReview(diffText, language)
+      const response = await fetch('http://localhost:8095/generate_review', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ diff: diffText })
+      });
+      
+      if (!response.ok) {
+        throw new Error(\`Server error: \${response.status}\`);
+      }
+      
+      const data: ReviewResponse = await response.json();
       setReviewData(data)
       setView('results')
     } catch (err: any) {
-      setErrorMsg(err.message || 'An unknown error occurred.')
+      setErrorMsg(err.message || 'Failed to connect to the backend API.')
       setView('error')
     }
   }
