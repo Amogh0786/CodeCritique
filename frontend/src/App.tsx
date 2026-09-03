@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { simulateReview, ReviewResponse, ReviewComment } from './mockApi'
+import { simulateReview, ReviewResponse } from './mockApi'
 import * as Diff2Html from 'diff2html'
 import 'diff2html/bundles/css/diff2html.min.css'
 import './index.css'
