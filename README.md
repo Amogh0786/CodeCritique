@@ -1,67 +1,52 @@
-# CodeCritique: Automated Code Reviewer (Llama 3.1 8B QLoRA)
+# CodeCritique
 
-An end-to-end LLM fine-tuning project that transforms a base Llama 3.1 8B model into an automated code review assistant. The model ingests git diffs and outputs constructive, actionable, and well-formatted review comments.
+Automated, intelligent code reviews powered by a fine-tuned Llama 3.1 8B model. 
+CodeCritique is a portfolio project demonstrating end-to-end ML engineering: from scoping and dataset generation, to LoRA fine-tuning, automated evaluation (LLM-as-a-judge), and deployment.
 
-## Project Overview
+## Tech Stack
+- **Frontend**: React, Vite, TypeScript, Tailwind CSS, Framer Motion, diff2html
+- **Backend/API**: FastAPI, Uvicorn, Python
+- **Model**: `unsloth/Meta-Llama-3.1-8B-bnb-4bit` (Fine-tuned with QLoRA)
+- **Design Aesthetic**: Glassmorphism (Dark & Light modes)
 
-- **Domain**: Generating code review comments from git diffs.
-- **Base Model**: `unsloth/Meta-Llama-3.1-8B-bnb-4bit`
-- **Technique**: QLoRA (Quantized Low-Rank Adaptation)
-- **Dataset**: A filtered, de-duplicated subset of the `ronantakizawa/github-codereview` dataset (400 train, 50 val, 50 test).
+---
 
-## Key Results
+## 🚀 Getting Started
 
-Our fine-tuned model significantly outperforms the Zero-Shot and Few-Shot baselines in formatting and actionability.
+### 1. Start the Frontend
+The frontend is a completely decoupled React application that features an interactive layout, unified diff rendering, and a simulated API response.
 
-| Model Setup | Quality (ROUGE-L) | p50 Latency (sec) | Cost per 1,000 reqs |
-|-------------|-------------------|-------------------|---------------------|
-| GPT-4o (Zero-Shot Baseline) | N/A (Judge Ref) | 1.20s | $3.25 |
-| Llama 3.1 8B (Base Few-Shot) | 0.1980 | 2.50s | ~$1.89 (Local/RunPod) |
-| **Llama 3.1 8B (Fine-Tuned)** | **0.3521** | **1.80s** | **~$1.89 (Local/RunPod)** |
-
-*In a blind LLM-as-a-Judge evaluation against the Zero-Shot baseline, the fine-tuned model was preferred **70% of the time** due to its ability to generate concise markdown ````suggestion```` blocks.*
-
-## Repository Structure
-
+```bash
+cd frontend
+npm install
+npm run dev
 ```
-├── data/                  # Train/val/test splits (JSONL format)
-├── docs/                  # Specs, data quality reports, and failure analysis
-├── eval/                  # Baseline evaluation and LLM-as-a-judge scripts
-├── models/                # Saved LoRA checkpoints
-├── results/               # Markdown tables with benchmark and cost scores
-├── scripts/               # Data preparation and benchmarking utilities
-├── serve/                 # FastAPI backend and Gradio UI
-├── train/                 # QLoRA configuration and training script
-└── README.md              # You are here
+Navigate to `http://localhost:5173`. 
+
+*Note: The frontend currently points to a mocked `simulateReview` function in `src/mockApi.ts` so that you can view the UI flow immediately without needing to boot a 24GB VRAM GPU.*
+
+### 2. Start the Real API (Optional)
+If you have a CUDA GPU and want to run the real fine-tuned Llama 3.1 model:
+
+```bash
+pip install -r requirements.txt
+python serve/api.py
 ```
+The FastAPI backend will start on `http://localhost:8095`.
+To wire the frontend to the real backend, edit `frontend/src/App.tsx`'s `handleGenerate` function to use the `fetch('http://localhost:8095/generate_review')` call instead of `simulateReview`.
 
-## How to Run
+---
 
-1. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   pip install pyyaml wandb fastapi uvicorn gradio pydantic
-   ```
+## Design System (Glassmorphism)
+The frontend implements a custom Glassmorphism aesthetic tailored for developer tools, avoiding generic "SaaS templates".
+- Deep animated mesh-gradients in Dark Mode.
+- Soft pastel gradients in Light Mode.
+- Heavily layered frosted glass panels with inner-light borders.
+- Monospace IDE-like text fields and diff viewers.
 
-2. **Train the Model**:
-   ```bash
-   python train/finetune.py
-   ```
-
-3. **Evaluate**:
-   ```bash
-   python eval/results.py
-   ```
-
-4. **Serve and Test**:
-   ```bash
-   python serve/api.py
-   python serve/demo.py
-   ```
-   Navigate to `http://localhost:7860` in your browser.
-
-## Resume Bullet Point
-
-If you are a recruiter or hiring manager looking at this repository, here is a summary of the engineering work:
-
-> **Fine-tuned and deployed Llama 3.1 (8B) using QLoRA to automate code reviews from git diffs, improving ROUGE-L by 77% over zero-shot baselines; built a FastAPI/vLLM backend that reduced inference latency by 28% and cut generation costs by 40% vs. OpenAI's API.**
+## Directory Structure
+- `frontend/`: The React + Tailwind Vite app.
+- `serve/`: FastAPI server for exposing the real Llama model.
+- `train/`: QLoRA fine-tuning scripts and datasets.
+- `eval/`: Baseline ROUGE generation and LLM-as-a-judge blind evaluation scripts.
+- `docs/`: Technical writeups and design tokens.
