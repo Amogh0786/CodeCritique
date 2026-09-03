@@ -40,7 +40,11 @@
     @apply absolute inset-0 rounded-2xl border border-white/[0.04] pointer-events-none transition-all duration-300;
   }
   .dark .glass-panel-interactive {
-    @apply glass-panel transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.15] cursor-pointer;
+    @apply bg-white/[0.03] backdrop-blur-[24px] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-2xl relative overflow-hidden transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.15] cursor-pointer;
+  }
+  .dark .glass-panel-interactive::before {
+    content: '';
+    @apply absolute inset-0 rounded-2xl border border-white/[0.04] pointer-events-none transition-all duration-300;
   }
 
   /* LIGHT MODE GLASS */
@@ -52,7 +56,11 @@
     @apply absolute inset-0 rounded-2xl border border-white/60 pointer-events-none transition-all duration-300;
   }
   .light .glass-panel-interactive {
-    @apply glass-panel transition-all duration-300 hover:bg-white/[0.8] hover:border-slate-300/60 hover:shadow-[0_12px_36px_0_rgba(30,41,59,0.12)] cursor-pointer;
+    @apply bg-white/[0.6] backdrop-blur-[24px] border border-slate-200/50 shadow-[0_8px_32px_0_rgba(30,41,59,0.08)] rounded-2xl relative overflow-hidden transition-all duration-300 hover:bg-white/[0.8] hover:border-slate-300/60 hover:shadow-[0_12px_36px_0_rgba(30,41,59,0.12)] cursor-pointer;
+  }
+  .light .glass-panel-interactive::before {
+    content: '';
+    @apply absolute inset-0 rounded-2xl border border-white/60 pointer-events-none transition-all duration-300;
   }
 
   /* SEVERITY ACCENTS */
